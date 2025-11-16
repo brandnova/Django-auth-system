@@ -1,6 +1,7 @@
 # Django Authentication System
 
 A complete, production-ready authentication system for Django with modern features and security best practices.
+>**Django Authentication System** is a **modern, secure, and production-ready authentication platform** for Django projects. It replaces traditional username logins with email-based authentication, supports social logins (Google, GitHub, Discord, Facebook), and offers advanced security features like passwordless magic links, optional two-factor authentication, and user-controlled security preferences. Built with a responsive Tailwind CSS UI, reCAPTCHA protection, and fully extensible user profiles, this system makes adding robust authentication to any Django project **fast, secure, and developer-friendly**.
 
 ## ✨ Features
 

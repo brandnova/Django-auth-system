@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
-from django_ckeditor_5.fields import CKEditor5Field # type: ignore
+from django_ckeditor_5.fields import CKEditor5Field
 
 class SiteSettings(models.Model):
     site_name = models.CharField(_('site name'), max_length=100, default='CivicLink')
