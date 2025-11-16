@@ -242,7 +242,7 @@ pip install mkdocs-material
 # Serve docs locally
 cd docs
 mkdocs serve
-
+```
 
 ## 🤝 Contributing
 
@@ -258,5 +258,5 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Ready to use?** Check out the full [documentation](https://brandnova.github.io/Django-Authentication-System/
+**Ready to use?** Check out the full [documentation](https://brandnova.github.io/Django-auth-system/
 ) for advanced configuration and customization options!
