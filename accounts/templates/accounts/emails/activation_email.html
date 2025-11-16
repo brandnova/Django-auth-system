@@ -1,0 +1,35 @@
+{% extends 'accounts/emails/base_email.html' %}
+
+{% block email_title %}Verify Your Email Address - Brand Nova Auth{% endblock %}
+
+{% block header_title %}Email Verification{% endblock %}
+
+{% block content_title %}Verify Your Email Address{% endblock %}
+
+{% block content %}
+<p style="margin: 0 0 12px 0; font-size: 14px;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+
+<p style="margin: 0 0 16px 0; font-size: 14px;">Thank you for registering with us. To complete your registration and verify your email address, please click the button below:</p>
+{% endblock %}
+
+{% block action_button %}
+<div class="text-center">
+    <a href="{{ site_url }}{% url 'accounts:activate' uidb64=uid token=token %}" class="btn">Verify Email Address</a>
+</div>
+
+<div class="text-small text-center text-muted mt-3">
+    <p style="margin: 0 0 4px 0;">Or copy and paste this link into your browser:</p>
+    <p style="margin: 0; word-break: break-all; font-family: monospace; font-size: 12px;">{{ site_url }}{% url 'accounts:activate' uidb64=uid token=token %}</p>
+</div>
+{% endblock %}
+
+{% block additional_info %}
+<div class="alert alert-info">
+    <p style="margin: 0; font-size: 13px;">This verification link will expire in 24 hours.</p>
+</div>
+{% endblock %}
+
+{% block closing %}
+<p style="margin: 0 0 8px 0;">If you didn't create an account with us, please ignore this email.</p>
+<p style="margin: 0;">Thanks,<br><strong>Brand Nova Team</strong></p>
+{% endblock %}

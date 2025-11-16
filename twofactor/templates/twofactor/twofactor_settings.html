@@ -1,0 +1,117 @@
+{% extends 'twofactor/base_2fa.html' %}
+
+{% block title %}Two-Factor Authentication{% endblock %}
+
+{% block 2fa_content %}
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Two-Factor Authentication</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">Add an extra layer of security to your account</p>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="{% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400{% else %}bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400{% endif %} p-4 rounded-lg mb-2">
+            <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Two-Factor Status Card -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div class="flex items-start justify-between mb-4">
+        <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Two-Factor Authentication</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {% if two_factor_settings.is_enabled %}
+                Using {{ two_factor_settings.get_method_display }}
+                {% else %}
+                Add an extra layer of security to your account
+                {% endif %}
+            </p>
+        </div>
+        <span class="px-3 py-1 {% if two_factor_settings.is_enabled %}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200{% else %}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{% endif %} text-xs font-medium rounded-full">
+            {% if two_factor_settings.is_enabled %}Enabled{% else %}Disabled{% endif %}
+        </span>
+    </div>
+    
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 {% if two_factor_settings.is_enabled %}bg-green-100 dark:bg-green-900{% else %}bg-red-100 dark:bg-red-900{% endif %} rounded-lg flex items-center justify-center">
+                {% if two_factor_settings.is_enabled %}
+                <svg class="w-6 h-6 {% if two_factor_settings.is_enabled %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                {% else %}
+                <svg class="w-6 h-6 {% if two_factor_settings.is_enabled %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                {% endif %}
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {% if two_factor_settings.is_enabled %}
+                    Two-Factor Authentication is Active
+                    {% else %}
+                    Two-Factor Authentication is Inactive
+                    {% endif %}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {% if two_factor_settings.is_enabled %}
+                    Last verified: {{ two_factor_settings.last_verified|date:"F j, Y, g:i a"|default:"Never" }}
+                    {% else %}
+                    Enable to protect your account
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <div>
+            {% if two_factor_settings.is_enabled %}
+            <div class="flex space-x-2">
+                <a href="{% url 'twofactor:change_2fa_method' %}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Change Method
+                </a>
+                <a href="{% url 'twofactor:disable_2fa' %}" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition">
+                    Disable
+                </a>
+            </div>
+            {% else %}
+            <a href="{% url 'twofactor:setup_2fa' %}" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg text-sm transition flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                <span>Enable 2FA</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if two_factor_settings.is_enabled %}
+    <!-- Additional Options -->
+    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Additional Options</h3>
+        <div class="space-y-2">
+            <a href="{% url 'twofactor:view_backup_codes' %}" class="flex items-center text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                View Backup Codes
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <!-- Benefits Section -->
+    <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+        <h3 class="font-medium text-gray-900 dark:text-white mb-2">Why enable two-factor authentication?</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">
+            Two-factor authentication adds an extra layer of security to your account by requiring a second form of verification beyond your password. This helps protect your account even if your password is compromised.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

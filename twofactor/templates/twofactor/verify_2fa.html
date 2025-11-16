@@ -1,0 +1,173 @@
+{% extends 'twofactor/base_2fa.html' %}
+
+{% block title %}Two-Factor Authentication{% endblock %}
+
+{% block 2fa_content %}
+<main class="pt-24 pb-16 min-h-screen">
+<div class="container mx-auto px-4">
+    <div class="max-w-md mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-secondary-200 dark:border-gray-700 p-6 mb-6">
+            <div class="text-center mb-6">
+                <i class="fas fa-padlock text-blue-500 text-4xl mb-4"></i>
+                <h1 class="text-2xl font-bold text-secondary-900 dark:text-white mt-4">Verify Your Identity</h1>
+            </div>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400{% elif message.tags == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400{% elif message.tags == 'warning' %}bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400{% else %}bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400{% endif %} p-4 rounded-lg mb-2">
+                    <p>{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if method == 'backup' %}
+            <!-- Backup Code Verification Form -->
+            <div class="mb-6">
+                <p class="text-secondary-600 dark:text-gray-400 text-center">
+                    Enter one of your backup codes to verify your identity.
+                </p>
+                <p class="text-sm text-secondary-500 dark:text-gray-500 text-center mt-2">
+                    You have {{ available_codes_count }} backup codes remaining.
+                </p>
+            </div>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-secondary-700 dark:text-gray-300 mb-1">
+                        {{ form.code.label }}
+                    </label>
+                    {{ form.code }}
+                    {% if form.code.errors %}
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.code.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium rounded-lg text-sm">
+                    Verify Backup Code
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <a href="{% url 'twofactor:verify_2fa' %}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    Use your regular 2FA method instead
+                </a>
+            </div>
+            
+            {% elif method == 'totp' %}
+            <!-- TOTP Verification Form -->
+            <div class="mb-6">
+                <p class="text-secondary-600 dark:text-gray-400 text-center">
+                    Enter the 6-digit code from your authenticator app.
+                </p>
+            </div>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-secondary-700 dark:text-gray-300 mb-1">
+                        {{ form.code.label }}
+                    </label>
+                    {{ form.code }}
+                    {% if form.code.errors %}
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.code.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium rounded-lg text-sm">
+                    Verify
+                </button>
+            </form>
+            
+            {% if has_backup_codes %}
+            <div class="mt-6 text-center">
+                <a href="{% url 'twofactor:verify_2fa' %}?backup=true" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    Can't access your authenticator? Use a backup code
+                </a>
+            </div>
+            {% endif %}
+            
+            {% elif method == 'email' %}
+            <!-- Email OTP Verification Form -->
+            {% if otp_sent %}
+            <div class="mb-6">
+                <p class="text-secondary-600 dark:text-gray-400 text-center">
+                    Enter the verification code sent to your email.
+                </p>
+            </div>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-secondary-700 dark:text-gray-300 mb-1">
+                        {{ form.code.label }}
+                    </label>
+                    {{ form.code }}
+                    {% if form.code.errors %}
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.code.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium rounded-lg text-sm">
+                    Verify
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <form method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_otp">
+                    <button type="submit" class="text-sm text-blue-600 dark:text-blue-400 hover:underline bg-transparent border-0 p-0 cursor-pointer">
+                        Resend verification code
+                    </button>
+                </form>
+            </div>
+            
+            {% if has_backup_codes %}
+            <div class="mt-6 text-center">
+                <a href="{% url 'twofactor:verify_2fa' %}?backup=true" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    Can't access your email? Use a backup code
+                </a>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center">
+                <p class="text-secondary-600 dark:text-gray-400 mb-4">
+                    Click the button below to receive a verification code via email.
+                </p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_otp">
+                    <button type="submit" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium rounded-lg text-sm">
+                        Send Verification Code
+                    </button>
+                </form>
+            </div>
+
+            {% if has_backup_codes %}
+            <div class="mt-6 text-center">
+                <a href="{% url 'twofactor:verify_2fa' %}?backup=true" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    Can't access your email? Use a backup code
+                </a>
+            </div>
+            {% endif %}
+
+            {% endif %}
+            {% endif %}
+            
+            <div class="mt-6 text-center">
+                <a href="{% url 'accounts:logout' %}" class="text-sm text-secondary-600 dark:text-gray-400 hover:underline">
+                    Log out and sign in with a different account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}

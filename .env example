@@ -1,0 +1,62 @@
+# Django Settings
+SECRET_KEY= 'django-secret-key'
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1,
+
+# Email Settings (Development - Using MailHog for testing email templates)
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=localhost
+EMAIL_PORT=1025
+EMAIL_USE_TLS=False
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+DEFAULT_FROM_EMAIL="site Team <webmaster@site.com>"
+
+# Email Settings (Production - Uncomment and fill these when ready)
+# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# EMAIL_HOST=smtp.gmail.com
+# EMAIL_PORT=587
+# EMAIL_USE_SSL=False
+# EMAIL_USE_TLS=True
+# EMAIL_HOST_USER=site@gmail.com
+# EMAIL_HOST_PASSWORD=strong-password
+# DEFAULT_FROM_EMAIL="site Team <site@gmail.com>"
+EMAIL_TIMEOUT=30
+
+# Social Authentication
+# Google OAuth2 settings
+# Note: You need to set up a Google Project and get the keys from there.
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=google-oauth-client-id.apps.googleusercontent.com
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=google-oauth-client-secret
+
+# Facebook OAuth2 settings
+# Note: You need to set up a Facebook app and get the keys from there.
+SOCIAL_AUTH_FACEBOOK_KEY=your-facebook-app-id
+SOCIAL_AUTH_FACEBOOK_SECRET=your-facebook-app-secret
+
+# GitHub OAuth2 settings
+# Note: You need to set up a GitHub app and get the keys from there.
+SOCIAL_AUTH_GITHUB_KEY=github-client-id
+SOCIAL_AUTH_GITHUB_SECRET=github-client-secret
+
+# Discord OAuth2 settings
+# Note: You need to set up a Discord application and get the keys from there.
+SOCIAL_AUTH_DISCORD_KEY=discord-key
+SOCIAL_AUTH_DISCORD_SECRET=discord-secret
+SOCIAL_AUTH_DISCORD_SCOPE= ['identify', 'email']  
+SOCIAL_AUTH_DISCORD_API_URL= 'https://discord.com/api'
+
+# Two-factor authentication settings
+# Number of days before re-verification is required
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14
+# Minutes before email OTP expires
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10
+
+# reCAPTCHA settings
+RECAPTCHA_ENABLED=false
+RECAPTCHA_SITE_KEY=recaptcha-site-key
+RECAPTCHA_SECRET_KEY=recaptcha-secret-key
+
+# Magic Links Settings
+MAGIC_LINK_TOKEN_LIFESPAN=10
+MAGIC_LINK_VERIFY_IP=False

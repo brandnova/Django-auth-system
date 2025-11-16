@@ -1,0 +1,68 @@
+{% extends 'twofactor/base_2fa.html' %}
+
+{% block title %}Set Up Two-Factor Authentication{% endblock %}
+
+{% block 2fa_content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-8 text-center">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Set Up Two-Factor Authentication</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Choose your preferred authentication method</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400{% else %}bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400{% endif %} p-4 rounded-lg">
+                <p>{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Authentication Method</label>
+                
+                <div class="space-y-4">
+                    <label class="flex items-start p-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:border-brand-500 dark:hover:border-brand-500 transition">
+                        <input type="radio" name="method" value="totp" class="mt-1 h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700" checked>
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="block font-semibold text-gray-900 dark:text-white">Authenticator App</span>
+                            </div>
+                            <span class="block text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                Use an app like Google Authenticator, Authy, or Microsoft Authenticator to generate verification codes.
+                            </span>
+                        </div>
+                    </label>
+                    
+                    <label class="flex items-start p-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:border-brand-500 dark:hover:border-brand-500 transition">
+                        <input type="radio" name="method" value="email" class="mt-1 h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                        <div class="ml-4">
+                            <span class="block font-semibold text-gray-900 dark:text-white">Email OTP</span>
+                            <span class="block text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                Receive a one-time verification code via email.
+                            </span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <a href="{% url 'twofactor:twofactor_settings' %}" class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg text-sm transition flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span>Continue</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

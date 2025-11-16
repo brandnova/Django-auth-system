@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# Environment
+.env
+.env.*
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# IDEs & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Migrations (optional)
+migrations
+**/migrations/*.py
+**/migrations/__pycache__/
+!**/migrations/__init__.py
+
+# pytest
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# MyPy
+.mypy_cache/
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Custom
+node_modules
+logs
+
+# MkDocs build static files
+site

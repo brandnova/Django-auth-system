@@ -1,0 +1,53 @@
+{% extends 'accounts/emails/base_email.html' %}
+
+{% block email_title %}Magic Login Link Requested{% endblock %}
+
+{% block header_title %}Security Notice{% endblock %}
+
+{% block content_title %}Magic Login Link Requested{% endblock %}
+
+{% block content %}
+<p style="margin: 0 0 12px 0; font-size: 14px;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+
+<div class="alert alert-warning">
+    <p style="margin: 0; font-size: 13px;"><strong>Security Notice:</strong> A magic login link was requested for your account but wasn't used.</p>
+</div>
+
+<p style="margin: 0 0 16px 0; font-size: 14px;">If this was you, you can request a new link at any time from the login page.</p>
+{% endblock %}
+
+{% block additional_info %}
+<div class="divider"></div>
+
+<h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;">Request Details</h3>
+<table class="login-table">
+    <tr>
+        <td>IP Address:</td>
+        <td>{{ ip_address }}</td>
+    </tr>
+    <tr>
+        <td>Request Time:</td>
+        <td>{{ timestamp|date:"F j, Y, g:i a" }}</td>
+    </tr>
+</table>
+
+<div class="divider"></div>
+
+<h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;">If This Wasn't You</h3>
+<p style="margin: 0 0 8px 0; font-size: 13px;">We recommend taking these security steps:</p>
+<ul style="margin: 0 0 12px 0; padding-left: 20px; font-size: 13px;">
+    <li>Change your password immediately</li>
+    <li>Review your recent login activity</li>
+    <li>Enable two-factor authentication</li>
+    <li>Check your magic links setting in account preferences</li>
+</ul>
+
+<div class="alert alert-info">
+    <p style="margin: 0; font-size: 13px;"><strong>Note:</strong> Magic links must be enabled in your account settings for them to work. You can disable this feature anytime.</p>
+</div>
+{% endblock %}
+
+{% block closing %}
+<p style="margin: 0 0 8px 0; font-size: 13px;">Stay secure and don't hesitate to contact us if you have any concerns.</p>
+<p style="margin: 0;"><strong>Brand Nova Security Team</strong></p>
+{% endblock %}

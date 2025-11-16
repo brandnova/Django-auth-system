@@ -1,0 +1,54 @@
+{% extends 'accounts/emails/base_email.html' %}
+
+{% block email_title %}Your Magic Login Link{% endblock %}
+
+{% block header_title %}Magic Login{% endblock %}
+
+{% block content_title %}Your Magic Login Link{% endblock %}
+
+{% block content %}
+<p style="margin: 0 0 12px 0; font-size: 14px;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+
+<p style="margin: 0 0 12px 0; font-size: 14px;">You requested a magic login link for your Brand Nova Auth account. Click the button below to log in instantly - no password needed!</p>
+
+<div class="alert alert-info">
+    <p style="margin: 0; font-size: 13px;"><strong>Quick and Secure:</strong> This link will expire in <strong>{{ expires_minutes }} minutes</strong> and can only be used once.</p>
+</div>
+{% endblock %}
+
+{% block action_button %}
+<div class="text-center">
+    <a href="{{ magic_link }}" class="btn">Log In to Your Account</a>
+</div>
+{% endblock %}
+
+{% block additional_info %}
+<div class="divider"></div>
+
+<h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;">Security Information</h3>
+<table class="login-table">
+    <tr>
+        <td>Request IP:</td>
+        <td>{{ ip_address }}</td>
+    </tr>
+    <tr>
+        <td>Request Time:</td>
+        <td>{% now "F j, Y, g:i a" %}</td>
+    </tr>
+    <tr>
+        <td>Link Expires:</td>
+        <td>{% now "F j, Y, g:i a" as now_time %}{{ now_time|add:expires_minutes|date:"F j, Y, g:i a" }}</td>
+    </tr>
+</table>
+
+<div class="divider"></div>
+
+<div class="alert alert-warning">
+    <p style="margin: 0; font-size: 13px;"><strong>Security Tip:</strong> If you didn't request this link, please ignore this email and consider reviewing your account security settings.</p>
+</div>
+{% endblock %}
+
+{% block closing %}
+<p style="margin: 0 0 8px 0; font-size: 13px;">For security reasons, this link will expire shortly and can only be used once.</p>
+<p style="margin: 0;"><strong>Brand Nova Team</strong></p>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'accounts/emails/base_email.html' %}
+
+{% block email_title %}New Login to Your Account - Brand Nova Auth{% endblock %}
+
+{% block header_title %}Security Alert{% endblock %}
+
+{% block content_title %}New Login Detected{% endblock %}
+
+{% block content %}
+<p style="margin: 0 0 12px 0; font-size: 14px;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+
+<p style="margin: 0 0 16px 0; font-size: 14px;">We detected a new login to your account on {{ timestamp|date:"M j, Y" }} at {{ timestamp|time:"H:i" }}.</p>
+{% endblock %}
+
+{% block additional_info %}
+<div class="alert alert-info">
+    <p style="margin: 0 0 8px 0; font-weight: 500;">Login Details:</p>
+    <table class="login-table">
+        <tr>
+            <td>Date & Time:</td>
+            <td>{{ timestamp|date:"M j, Y, H:i" }}</td>
+        </tr>
+        <tr>
+            <td>IP Address:</td>
+            <td>{{ ip_address }}</td>
+        </tr>
+        <tr>
+            <td>Location:</td>
+            <td>{{ location }}</td>
+        </tr>
+        <tr>
+            <td>Device:</td>
+            <td>{{ device }}</td>
+        </tr>
+        <tr>
+            <td>Browser:</td>
+            <td>{{ browser }}</td>
+        </tr>
+        <tr>
+            <td>Operating System:</td>
+            <td>{{ os }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="divider"></div>
+
+<p style="margin: 0 0 12px 0; font-size: 13px;">If this was you, you can safely ignore this email.</p>
+{% endblock %}
+
+{% block closing %}
+<p style="margin: 0 0 8px 0; font-weight: 500;">Was this not you?</p>
+<p style="margin: 0 0 8px 0; font-size: 13px;">If you did not log in to your account at this time, please take immediate action:</p>
+<ol style="margin: 0 0 8px 0; padding-left: 20px; font-size: 13px;">
+    <li><a href="{{ site_url }}{% url 'accounts:password_reset' %}" style="color: #0ea5e9;">Reset your password</a> immediately</li>
+    <li>Review your account for any suspicious activity</li>
+    <li>Enable two-factor authentication for additional security</li>
+</ol>
+<p style="margin: 0;"><strong>Brand Nova Security Team</strong></p>
+{% endblock %}

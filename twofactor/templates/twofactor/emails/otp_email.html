@@ -1,0 +1,36 @@
+{% extends 'twofactor/emails/base_email.html' %}
+
+{% block email_title %}Your Verification Code - Brand Nova Auth{% endblock %}
+
+{% block header_title %}Security Verification{% endblock %}
+
+{% block header_subtitle %}Two-Factor Authentication{% endblock %}
+
+{% block content_title %}Your Verification Code{% endblock %}
+
+{% block content %}
+<p style="margin: 0 0 12px 0; font-size: 14px;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+
+<p style="margin: 0 0 16px 0; font-size: 14px;">Your verification code for two-factor authentication is:</p>
+
+<div class="text-center">
+    <div class="otp-code">
+        {{ otp }}
+    </div>
+</div>
+
+<p style="margin: 12px 0 0 0; font-size: 13px; color: #64748b; text-align: center;">
+    This code will expire in <strong>{{ expiry_minutes }} minutes</strong>.
+</p>
+{% endblock %}
+
+{% block additional_info %}
+<div class="alert alert-info">
+    <p style="margin: 0; font-size: 13px; font-weight: 500;">For your security, never share this code with anyone.</p>
+</div>
+{% endblock %}
+
+{% block closing %}
+<p style="margin: 0 0 8px 0;">If you didn't request this code, please secure your account immediately.</p>
+<p style="margin: 0;">Stay secure,<br><strong>Brand Nova Security Team</strong></p>
+{% endblock %}

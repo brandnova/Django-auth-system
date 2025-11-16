@@ -1,0 +1,68 @@
+{% extends 'twofactor/base_2fa.html' %}
+
+{% block title %}Disable Two-Factor Authentication{% endblock %}
+
+{% block 2fa_content %}
+<div class="max-w-md mx-auto">
+    <div class="mb-8 text-center">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Disable Two-Factor Authentication</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Are you sure you want to disable two-factor authentication?</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400{% else %}bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400{% endif %} p-4 rounded-lg">
+                <p>{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="mb-6">
+            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-400 rounded-lg">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="font-medium mb-1">Security Warning</h3>
+                        <p class="text-sm">
+                            Disabling two-factor authentication will make your account less secure. Anyone with your password will be able to access your account.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="flex items-start space-x-3">
+                    <input type="checkbox" name="confirm" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 mt-0.5" required>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                        I understand that disabling two-factor authentication will make my account less secure.
+                    </span>
+                </label>
+                {% if form.confirm.errors %}
+                <p class="text-red-500 text-sm mt-2">{{ form.confirm.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <a href="{% url 'twofactor:twofactor_settings' %}" class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    <span>Disable 2FA</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
