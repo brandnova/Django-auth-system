@@ -1,0 +1,2312 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Django auth system">
+      
+      
+        <meta name="author" content="Brand Nova">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Brand Nova Authentication System</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#django-authentication-system-setup-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Brand Nova Authentication System" class="md-header__button md-logo" aria-label="Brand Nova Authentication System" data-md-component="logo">
+      
+  <img src="images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Brand Nova Authentication System
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Brand Nova Authentication System" class="md-nav__button md-logo" aria-label="Brand Nova Authentication System" data-md-component="logo">
+      
+  <img src="images/logo.png" alt="logo">
+
+    </a>
+    Brand Nova Authentication System
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-start-a-new-project-with-this-authentication-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Start a New Project with This Authentication System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-add-to-an-existing-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Add to an Existing Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirect-handling-with-next-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redirect Handling with "next" Parameter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Redirect Handling with &#34;next&#34; Parameter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-in-your-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage in Your Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailwind-css-build-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailwind CSS Build System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#magic-links-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magic Links Authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Magic Links Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-magic-links-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Magic Links Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Preferences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Preferences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Preferences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-experience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Experience
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Factor Authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Two-Factor Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-2fa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling 2FA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-2fa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling 2FA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2fa-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2FA Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-other-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Other Apps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration with Other Apps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-platform-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Social Media Platform Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E-commerce Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Management Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Management Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-superuser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Superuser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up-deleted-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up Deleted Accounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning Up Deleted Accounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accounts-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accounts App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-factor-authentication-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Factor Authentication App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core App
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-start-a-new-project-with-this-authentication-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Start a New Project with This Authentication System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-add-to-an-existing-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Add to an Existing Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirect-handling-with-next-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redirect Handling with "next" Parameter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Redirect Handling with &#34;next&#34; Parameter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-in-your-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage in Your Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailwind-css-build-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailwind CSS Build System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#magic-links-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magic Links Authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Magic Links Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-magic-links-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Magic Links Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Preferences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Preferences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Preferences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-experience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Experience
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Factor Authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Two-Factor Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-2fa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling 2FA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-2fa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling 2FA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2fa-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2FA Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-other-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Other Apps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration with Other Apps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-platform-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Social Media Platform Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E-commerce Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Management Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Management Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-superuser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Superuser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up-deleted-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up Deleted Accounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning Up Deleted Accounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accounts-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accounts App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-factor-authentication-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Factor Authentication App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core App
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="django-authentication-system-setup-guide">Django Authentication System Setup Guide</h1>
+<p>This guide provides comprehensive instructions for setting up and customizing the Django Authentication System, which includes a core authentication app (<code>accounts</code>) and an optional Two-Factor Authentication app (<code>twofactor</code>).</p>
+<h2 id="overview">Overview</h2>
+<p>This authentication system provides a complete solution for user authentication in Django projects. It includes:</p>
+<ul>
+<li>Email-based authentication (instead of username)</li>
+<li>Email verification (for account activation)</li>
+<li>Password reset/change functionality</li>
+<li>Google reCAPTCHA</li>
+<li>User profiles with customizable fields</li>
+<li>Social authentication (Google, Facebook, etc.)</li>
+<li>Magic Links - Passwordless authentication via email</li>
+<li>User-controlled security preferences</li>
+<li>Optional Two-Factor Authentication (2FA)</li>
+<li>Account security settings and deletion</li>
+<li>Soft-delete functionality with account reactivation</li>
+</ul>
+<h3 id="project-structure">Project Structure</h3>
+<p>The authentication system consists of three main apps:</p>
+<ol>
+<li><strong><code>accounts</code></strong>: Core authentication functionality</li>
+<li><strong><code>twofactor</code></strong>: Optional Two-Factor Authentication</li>
+<li><strong><code>core</code></strong>: Base templates and landing page</li>
+</ol>
+<h2 id="installation">Installation</h2>
+<h3 id="option-1-start-a-new-project-with-this-authentication-system">Option 1: Start a New Project with This Authentication System</h3>
+<ol>
+<li>
+<p>Clone the repository:
+   <code>bash
+   git clone https://github.com/yourusername/django-auth-system.git
+   cd django-auth-system</code></p>
+</li>
+<li>
+<p>Create and activate a virtual environment:
+   <code>bash
+   python -m venv env
+   source env/bin/activate  # On Windows: env\Scripts\activate</code></p>
+</li>
+<li>
+<p>Install dependencies:
+   <code>bash
+   pip install -r requirements.txt</code></p>
+</li>
+<li>
+<p>Run migrations:
+   <code>bash
+   python manage.py migrate</code></p>
+</li>
+<li>
+<p>Create a superuser:
+   <code>bash
+   python manage.py createsuperuser_email</code></p>
+</li>
+<li>
+<p>Run the development server:
+   <code>bash
+   python manage.py runserver</code></p>
+</li>
+</ol>
+<h3 id="option-2-add-to-an-existing-project">Option 2: Add to an Existing Project</h3>
+<ol>
+<li>
+<p>Copy the <code>accounts</code>, <code>twofactor</code> (optional), and <code>core</code> apps to your project:
+   <code>bash
+   cp -r accounts twofactor core /path/to/your/project/</code></p>
+</li>
+<li>
+<p>Add the apps to your <code>INSTALLED_APPS</code> in <code>settings.py</code>:
+   ```python
+   INSTALLED_APPS = [
+       # Django built-in apps
+       'django.contrib.admin',
+       'django.contrib.auth',
+       'django.contrib.contenttypes',
+       'django.contrib.sessions',
+       'django.contrib.messages',
+       'django.contrib.staticfiles',</p>
+<p># Third-party apps
+   'social_django',  # For social authentication</p>
+<p># Local apps
+   'accounts',
+   'twofactor',  # Optional
+   'core',</p>
+<p># Your other apps
+   ]
+   ```</p>
+</li>
+<li>
+<p>Configure the authentication settings (see <a href="#configuration">Configuration</a> section)</p>
+</li>
+<li>Run migrations:
+   <code>bash
+   python manage.py makemigrations
+   python manage.py migrate</code></li>
+</ol>
+<h2 id="configuration">Configuration</h2>
+<h3 id="basic-settings">Basic Settings</h3>
+<p>Add the following to your <code>settings.py</code>:</p>
+<pre><code class="language-python"># Authentication settings
+AUTH_USER_MODEL = 'accounts.User'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend',  
+    'social_core.backends.github.GithubOAuth2', # For social auth
+    'social_core.backends.discord.DiscordOAuth2', # For social auth
+    'social_core.backends.google.GoogleOAuth2', # For social auth
+    'social_core.backends.facebook.FacebookOAuth2', # For social auth
+]
+
+# Login settings
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'accounts:profile'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@example.com'
+EMAIL_HOST_PASSWORD = 'your-password'
+DEFAULT_FROM_EMAIL = 'Your Site &lt;noreply@example.com&gt;'
+
+# For development, you can use the console email backend
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Social Authentication settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'your-google-client-id'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'your-google-client-secret'
+
+SOCIAL_AUTH_FACEBOOK_KEY = 'your-facebook-app-id'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'your-facebook-app-secret'
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+SOCIAL_AUTH_GITHUB_KEY= 'your-github-client-id'
+SOCIAL_AUTH_GITHUB_SECRET= 'your-github-secret-key'
+
+SOCIAL_AUTH_DISCORD_KEY = 'your-discord-key'
+SOCIAL_AUTH_DISCORD_SECRET = 'your-discord-secret'
+SOCIAL_AUTH_DISCORD_SCOPE = ['identify', 'email']  
+SOCIAL_AUTH_DISCORD_API_URL = 'https://discord.com/api'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'accounts.pipeline.create_user_profile',  # Custom function to create user profile
+    'accounts.pipeline.set_email_verified',   # Custom function to set email as verified
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+# reCAPTCHA settings
+RECAPTCHA_ENABLED = True
+RECAPTCHA_SITE_KEY = 'your-recaptcha-site-key'
+RECAPTCHA_SECRET_KEY = 'your-recaptcha-secret-key'
+
+# Magic Links settings
+MAGIC_LINK_TOKEN_LIFESPAN = 10  # Minutes before magic link expires (default: 10)
+MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address (default: False)
+</code></pre>
+<h3 id="url-configuration">URL Configuration</h3>
+<p>Add the following to your <code>urls.py</code>:</p>
+<pre><code class="language-python">from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('core.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('2fa/', include('twofactor.urls')),  # Optional
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    # Your other URL patterns
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+</code></pre>
+<h3 id="redirect-handling-with-next-parameter">Redirect Handling with "next" Parameter</h3>
+<p>The authentication system supports automatic redirection using the <code>next</code> parameter, allowing users to be redirected back to their original page after login or registration.</p>
+<h4 id="how-it-works">How It Works</h4>
+<ul>
+<li>When a user tries to access a protected page without being logged in, they are redirected to the login page with a <code>next</code> parameter containing the original URL</li>
+<li>After successful login or registration, the user is automatically redirected to the URL specified in the <code>next</code> parameter</li>
+<li>If no <code>next</code> parameter is provided, users are redirected to their profile page (login) or home page</li>
+</ul>
+<h4 id="implementation">Implementation</h4>
+<p>The system automatically handles <code>next</code> parameters in:
+- Login page (<code>/accounts/login/?next=/protected-page/</code>)
+- Registration page (<code>/accounts/signup/?next=/protected-page/</code>)
+- Magic links (<code>/accounts/login/magic-link/?next=/protected-page/</code>)</p>
+<h4 id="usage-in-your-views">Usage in Your Views</h4>
+<p>To protect a view and enable automatic redirection, use Django's <code>@login_required</code> decorator:</p>
+<pre><code class="language-python">from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+@login_required
+def protected_view(request):
+    # This view requires authentication
+    return render(request, 'app/protected.html')
+</code></pre>
+<p>When unauthenticated users access this view, they'll be automatically redirected to:
+<code>/accounts/login/?next=/protected-view/</code></p>
+<p>After login, they'll be redirected back to <code>/protected-view/</code>.</p>
+<h4 id="manual-implementation">Manual Implementation</h4>
+<p>You can also manually pass the <code>next</code> parameter in your templates:</p>
+<pre><code class="language-html">&lt;a href=&quot;{% url 'accounts:login' %}?next={{ request.path }}&quot; class=&quot;btn-login&quot;&gt;
+    Login to continue
+&lt;/a&gt;
+</code></pre>
+<p>This ensures users return to the current page after authentication.</p>
+<h2 id="customization">Customization</h2>
+<h3 id="templates">Templates</h3>
+<p>The authentication system uses a base template located at <code>templates/base.html</code>. You can customize this template to match your site's design.</p>
+<p>All authentication templates are located in the following directories:</p>
+<ul>
+<li><code>accounts/templates/accounts/auth/</code>: Login, signup, password reset, magic links, etc.</li>
+<li><code>accounts/templates/accounts/profile/</code>: User profile templates</li>
+<li><code>accounts/templates/accounts/emails/</code>: Email templates</li>
+<li><code>accounts/templates/accounts/security/</code>: Security settings templates</li>
+<li><code>twofactor/templates/twofactor/</code>: Two-factor authentication templates</li>
+</ul>
+<p>To customize a template, modify the existing ones or create a new template with the same name in your project's template directory and delete the existing one.</p>
+<h3 id="tailwind-css-build-system">Tailwind CSS Build System</h3>
+<p>This project ships with a dedicated Tailwind build setup located inside the <code>Tailwind/</code> directory. It works independently from Django’s apps but integrates cleanly with the template system.</p>
+<p>The build script watches your Django templates and any static JavaScript files for class names, then compiles an optimized stylesheet to:</p>
+<pre><code>static/css/tailwind.css
+</code></pre>
+<p><strong>Key points about the setup:</strong></p>
+<ul>
+<li>The entire Tailwind workflow is isolated to the <code>Tailwind/</code> folder for clarity.</li>
+<li>Node and Tailwind CLI handle compilation; Django never processes Tailwind directly.</li>
+<li>Only classes actually used in templates or JS files are included in the final CSS.</li>
+<li>Hot-reloading is supported during development through the included watcher script.</li>
+<li>Production builds generate a fully minimized stylesheet.</li>
+</ul>
+<p>To understand or modify the workflow, check the documentation inside:</p>
+<pre><code>Tailwind/IMPORTANT.md
+</code></pre>
+<p>This explains how to run the dev watcher, create production builds, and adjust Tailwind config as needed.</p>
+<h3 id="user-model">User Model</h3>
+<p>The authentication system uses a custom User model with email as the username field. You can extend this model by adding fields to the <code>UserProfile</code> model in <code>accounts/models.py</code>.</p>
+<h3 id="forms">Forms</h3>
+<p>All forms are located in <code>accounts/forms.py</code>. You can customize these forms by subclassing them in your project.</p>
+<h3 id="views">Views</h3>
+<p>All views are located in <code>accounts/views.py</code>. You can customize these views by subclassing them in your project.</p>
+<h2 id="magic-links-authentication">Magic Links Authentication</h2>
+<p>The system now includes <strong>Magic Links</strong> - a modern, passwordless authentication method that allows users to log in by clicking a secure link sent to their email.</p>
+<h3 id="how-magic-links-work">How Magic Links Work</h3>
+<ol>
+<li>User enters their email on the login page and chooses "Send Magic Link"</li>
+<li>System generates a secure, one-time token with configurable expiration</li>
+<li>User receives an email with a login link</li>
+<li>Clicking the link logs the user in instantly</li>
+<li>Token is marked as used and cannot be reused</li>
+</ol>
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>User-controlled</strong>: Magic links must be enabled by users in their security settings (disabled by default)</li>
+<li><strong>Secure</strong>: Tokens expire after configurable time (default: 10 minutes) and are single-use</li>
+<li><strong>Account Reactivation</strong>: Can be used to reactivate soft-deleted accounts</li>
+<li><strong>reCAPTCHA Protected</strong>: Includes reCAPTCHA verification to prevent abuse</li>
+<li><strong>Email Notifications</strong>: Users receive notifications for magic link requests</li>
+</ul>
+<h3 id="configuration_1">Configuration</h3>
+<p>Magic links are configured via settings:</p>
+<pre><code class="language-python"># Magic Links settings (add to your settings.py)
+MAGIC_LINK_TOKEN_LIFESPAN = 10  # Minutes before magic link expires
+MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address matches request
+</code></pre>
+<h3 id="urls">URLs</h3>
+<p>The magic links feature adds the following URLs:</p>
+<ul>
+<li><code>accounts:magic_link_request</code> - Request a magic link</li>
+<li><code>accounts:magic_link_verify</code> - Verify and use a magic link token</li>
+</ul>
+<h2 id="security-preferences">Security Preferences</h2>
+<p>Users now have granular control over their security settings through the new Security tab in account settings.</p>
+<h3 id="available-preferences">Available Preferences</h3>
+<ol>
+<li><strong>Magic Links</strong></li>
+<li>Enable/disable magic link authentication</li>
+<li>Disabled by default for security</li>
+<li>
+<p>Users must explicitly enable this feature</p>
+</li>
+<li>
+<p><strong>Login Notifications</strong></p>
+</li>
+<li>Enable/disable email notifications for new logins</li>
+<li>Enabled by default for security</li>
+<li>Includes device, browser, location, and IP details</li>
+<li>Strong warning when disabling for security awareness</li>
+</ol>
+<h3 id="user-experience">User Experience</h3>
+<ul>
+<li><strong>Intuitive Toggle Switches</strong>: Modern, accessible toggle controls</li>
+<li><strong>Security Warnings</strong>: Clear warnings when disabling security features</li>
+<li><strong>Educational Content</strong>: Explanations of why each feature matters</li>
+<li><strong>Real-time Updates</strong>: Immediate feedback when changing preferences</li>
+</ul>
+<h3 id="implementation_1">Implementation</h3>
+<p>The security preferences are managed through:
+- <code>UserPreferences</code> model (extends user settings)
+- Dedicated Security tab in account settings
+- Contextual warnings for security-sensitive changes
+- Responsive design that works on all devices</p>
+<h2 id="two-factor-authentication">Two-Factor Authentication</h2>
+<p>The Two-Factor Authentication (2FA) app is designed to be modular and can be easily added or removed from your project.</p>
+<h3 id="enabling-2fa">Enabling 2FA</h3>
+<ol>
+<li>
+<p>Add <code>'twofactor'</code> to your <code>INSTALLED_APPS</code> in <code>settings.py</code>:
+   <code>python
+   INSTALLED_APPS = [
+       # ...
+       'twofactor',
+       # ...
+   ]</code></p>
+</li>
+<li>
+<p>Add the 2FA middleware to your <code>MIDDLEWARE</code> in <code>settings.py</code> right after <code>'django.contrib.auth.middleware.AuthenticationMiddleware'</code>:
+   <code>python
+   MIDDLEWARE = [
+       # ...
+       'twofactor.middleware.TwoFactorMiddleware',  # Add after authentication middleware
+       # ...
+   ]</code></p>
+</li>
+<li>
+<p>Add the 2FA URLs to your project's <code>urls.py</code>:
+   <code>python
+   urlpatterns = [
+       # ...
+       path('2fa/', include('twofactor.urls')),
+       # ...
+   ]</code></p>
+</li>
+<li>
+<p>Add the 2FA button to the security settings template <code>accounts/templates/accounts/security/security_settings.html</code>:
+   ```html
+ <br />
+<div class="flex justify-center">
+       <a href="{% url 'twofactor:twofactor_settings' %}" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition flex items-center space-x-2">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+           </svg>
+           <span>Manage Two-Factor Authentication</span>
+       </a>
+   </div></p>
+</li>
+</ol>
+<p>```</p>
+<ol>
+<li>Run migrations:
+   <code>bash
+   python manage.py makemigrations twofactor
+   python manage.py migrate</code></li>
+</ol>
+<h3 id="disabling-2fa">Disabling 2FA</h3>
+<p>To disable 2FA, simply:</p>
+<ol>
+<li>Remove <code>'twofactor'</code> from <code>INSTALLED_APPS</code></li>
+<li>Remove <code>'twofactor.middleware.TwoFactorMiddleware'</code> from <code>MIDDLEWARE</code></li>
+<li>Remove the 2FA URL pattern from your project's <code>urls.py</code></li>
+<li>Remove the 2FA button from your accounts security settings template</li>
+</ol>
+<p>No changes to the database are required, as the 2FA tables will simply be ignored when the app is not installed.</p>
+<h3 id="2fa-configuration">2FA Configuration</h3>
+<p>You can configure the following settings in your <code>settings.py</code>:</p>
+<pre><code class="language-python"># Two-Factor Authentication Settings
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS = 1  # Number of days before re-verification is required
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = 10  # Minutes before email OTP expires
+</code></pre>
+<h2 id="integration-with-other-apps">Integration with Other Apps</h2>
+<h3 id="social-media-platform-example">Social Media Platform Example</h3>
+<p>If you're building a social media platform, you can integrate the authentication system as follows:</p>
+<ol>
+<li>
+<p>Create your social media app:
+   <code>bash
+   python manage.py startapp social</code></p>
+</li>
+<li>
+<p>Add the app to <code>INSTALLED_APPS</code> in <code>settings.py</code>:
+   <code>python
+   INSTALLED_APPS = [
+       # ...
+       'social',
+       # ...
+   ]</code></p>
+</li>
+<li>
+<p>Create models that reference the User model:
+   ```python
+   from django.db import models
+   from django.conf import settings</p>
+</li>
+</ol>
+<p>class Post(models.Model):
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
+       content = models.TextField()
+       created_at = models.DateTimeField(auto_now_add=True)
+       # Other fields...</p>
+<p>class Follow(models.Model):
+       follower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='following')
+       following = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='followers')
+       created_at = models.DateTimeField(auto_now_add=True)
+       # Other fields...
+   ```</p>
+<ol>
+<li>Create views that require authentication:
+   ```python
+   from django.shortcuts import render, redirect
+   from django.contrib.auth.decorators import login_required
+   from .models import Post</li>
+</ol>
+<p>@login_required
+   def create_post(request):
+       if request.method == 'POST':
+           # Process form data
+           # ...
+           return redirect('social:feed')
+       return render(request, 'social/create_post.html')
+   ```</p>
+<ol>
+<li>Add URLs for your social media app:
+   ```python
+   from django.urls import path
+   from . import views</li>
+</ol>
+<p>app_name = 'social'</p>
+<p>urlpatterns = [
+       path('feed/', views.feed, name='feed'),
+       path('post/create/', views.create_post, name='create_post'),
+       # Other URLs...
+   ]
+   ```</p>
+<ol>
+<li>Include your app's URLs in the project's <code>urls.py</code>:
+   <code>python
+   urlpatterns = [
+       # ...
+       path('social/', include('social.urls')),
+       # ...
+   ]</code></li>
+</ol>
+<h3 id="e-commerce-example">E-commerce Example</h3>
+<p>For an e-commerce site:</p>
+<ol>
+<li>Create models that reference the User model:
+   ```python
+   class Order(models.Model):
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
+       # Other fields...</li>
+</ol>
+<p>class ShippingAddress(models.Model):
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='shipping_addresses')
+       # Other fields...
+   ```</p>
+<ol>
+<li>Extend the UserProfile model to include customer-specific fields:
+   ```python
+   # In your app's models.py
+   from accounts.models import UserProfile</li>
+</ol>
+<p>class CustomerProfile(models.Model):
+       user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='customer_profile')
+       customer_id = models.CharField(max_length=100, blank=True)
+       loyalty_points = models.IntegerField(default=0)
+       # Other fields...
+   ```</p>
+<ol>
+<li>Create a signal to create a CustomerProfile when a UserProfile is created:
+   ```python
+   from django.db.models.signals import post_save
+   from django.dispatch import receiver
+   from accounts.models import UserProfile
+   from .models import CustomerProfile</li>
+</ol>
+<p>@receiver(post_save, sender=UserProfile)
+   def create_customer_profile(sender, instance, created, **kwargs):
+       if created:
+           CustomerProfile.objects.create(user_profile=instance)
+   ```</p>
+<h2 id="management-commands">Management Commands</h2>
+<h3 id="creating-a-superuser">Creating a Superuser</h3>
+<p>To create a superuser without email verification:</p>
+<pre><code class="language-bash">python manage.py createsuperuser_email
+</code></pre>
+<h3 id="cleaning-up-deleted-accounts">Cleaning Up Deleted Accounts</h3>
+<p>To permanently delete accounts that were scheduled for deletion and the grace period has expired:</p>
+<pre><code class="language-bash"># Basic usage - permanently delete accounts soft-deleted over 30 days ago
+python manage.py cleanup_deleted_accounts
+
+# Dry run - see which accounts would be deleted without actually deleting them
+python manage.py cleanup_deleted_accounts --dry-run
+
+# Custom threshold - delete accounts soft-deleted over 60 days ago
+python manage.py cleanup_deleted_accounts --days 60
+
+# Verbose output - show detailed information about each account
+python manage.py cleanup_deleted_accounts --verbose
+
+# Non-interactive mode (for cron jobs) - skip confirmation prompt
+python manage.py cleanup_deleted_accounts --no-input
+</code></pre>
+<h4 id="command-options">Command Options</h4>
+<ul>
+<li><code>--dry-run</code>: Show which accounts would be deleted without actually deleting them</li>
+<li><code>--days</code>: Number of days after which to permanently delete accounts (default: 30)</li>
+<li><code>--verbose</code>: Show detailed information about each account being processed</li>
+<li><code>--no-input</code>: Non-interactive mode, skip confirmation prompts</li>
+</ul>
+<h4 id="recommended-usage">Recommended Usage</h4>
+<p>For production environments, it's recommended to set up a cron job to run this command regularly:</p>
+<pre><code class="language-bash"># Run every Sunday at 2 AM to clean up accounts deleted over 30 days ago
+0 2 * * 0 /path/to/your/venv/bin/python /path/to/your/project/manage.py cleanup_deleted_accounts --no-input
+
+# Or with logging:
+0 2 * * 0 /path/to/your/venv/bin/python /path/to/your/project/manage.py cleanup_deleted_accounts --no-input &gt;&gt; /var/log/account_cleanup.log 2&gt;&amp;1
+</code></pre>
+<h4 id="safety-features">Safety Features</h4>
+<ul>
+<li><strong>Grace Period</strong>: Accounts are only deleted after 30 days (configurable)</li>
+<li><strong>Confirmation Prompt</strong>: Interactive confirmation required by default</li>
+<li><strong>Dry Run Mode</strong>: Preview which accounts would be affected</li>
+<li><strong>Error Handling</strong>: Continues processing other accounts if one fails</li>
+<li><strong>Audit Logging</strong>: Detailed logging for compliance and debugging</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<ol>
+<li>
+<p><strong>Migration Issues</strong>:
+   If you encounter migration issues, try:
+   <code>bash
+   python manage.py makemigrations
+   python manage.py migrate --fake-initial</code></p>
+</li>
+<li>
+<p><strong>Template Not Found</strong>:
+   Make sure your template directories are correctly configured in <code>settings.py</code>:
+   <code>python
+   TEMPLATES = [
+       {
+           'BACKEND': 'django.template.backends.django.DjangoTemplates',
+           'DIRS': [os.path.join(BASE_DIR, 'templates')],
+           'APP_DIRS': True,
+           # ...
+       },
+   ]</code></p>
+</li>
+<li>
+<p><strong>Static Files Not Loading</strong>:
+   Make sure your static files are correctly configured in <code>settings.py</code>:
+   <code>python
+   STATIC_URL = '/static/'
+   STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')</code></p>
+</li>
+<li>
+<p><strong>Email Not Sending</strong>:</p>
+</li>
+<li>Check your email settings in <code>settings.py</code></li>
+<li>
+<p>For development, use the console email backend or MailHog</p>
+</li>
+<li>
+<p><strong>Magic Links Not Working</strong>:</p>
+</li>
+<li>Ensure <code>MAGIC_LINK_TOKEN_LIFESPAN</code> is set in settings</li>
+<li>Check that the context processor is properly configured</li>
+<li>
+<p>Verify email backend is working correctly</p>
+</li>
+<li>
+<p><strong>Authentication Backend Error</strong>:
+   If you see "multiple authentication backends configured" error:</p>
+</li>
+<li>Ensure the <code>login_user</code> utility function is used in magic link views</li>
+<li>Check that user objects have the backend attribute set</li>
+</ol>
+<h3 id="getting-help">Getting Help</h3>
+<p>If you encounter any issues not covered in this guide, please:</p>
+<ol>
+<li>Check the Django documentation: <a href="https://docs.djangoproject.com/">https://docs.djangoproject.com/</a></li>
+<li>Open an issue on the GitHub repository</li>
+<li>Contact the maintainers at <a href="mailto:brandnova89@gmail.com">brandnova89@gmail.com</a></li>
+</ol>
+<h2 id="file-structure">File Structure</h2>
+<h3 id="accounts-app">Accounts App</h3>
+<pre><code class="language-plaintext">accounts/
+├── management/
+│   └── commands/
+│       ├── createsuperuser_email.py
+│       └── cleanup_deleted_accounts.py
+├── migrations/
+│   ├── __init__.py
+│   └── ... (migration files)
+├── templates/
+│   └── accounts/
+│       ├── auth/
+│       │   ├── email_change.html
+│       │   ├── login.html
+│       │   ├── magic_link_request.html
+│       │   ├── password_change.html
+│       │   ├── password_reset.html
+│       │   ├── password_reset_confirm.html
+│       │   └── signup.html
+│       ├── emails/
+│       │   ├── activation_email.html
+│       │   ├── base_email.html
+│       │   ├── email_change.html
+│       │   ├── login_notification.html
+│       │   ├── magic_link_email.html
+│       │   ├── magic_link_requested.html
+│       │   ├── password_change_notification.html
+│       │   ├── password_reset_email.html
+│       │   └── welcome_email.html
+│       ├── profile/
+│       │   ├── edit_profile.html
+│       │   ├── edit_profile_images.html
+│       │   └── profile.html
+│       └── security/
+│           └── security_settings.html
+├── __init__.py
+├── admin.py
+├── apps.py
+├── backends.py
+├── context_processors.py
+├── forms.py
+├── magic_links.py
+├── models.py
+├── pipeline.py
+├── signals.py
+├── tokens.py
+├── urls.py
+├── utils.py
+├── views.py
+└── widgets.py
+</code></pre>
+<h3 id="two-factor-authentication-app">Two-Factor Authentication App</h3>
+<pre><code class="language-plaintext">twofactor/
+├── migrations/
+│   ├── __init__.py
+│   └── ... (migration files)
+├── templates/
+│   └── twofactor/
+│       ├── emails/
+│       │   ├── base_email.html
+│       │   └── otp_email.html
+│       ├── backup_codes.html
+│       ├── base_2fa.html
+│       ├── change_2fa_method.html
+│       ├── disable_2fa.html
+│       ├── security_settings.html
+│       ├── setup_2fa.html
+│       ├── setup_totp.html
+│       ├── verify_2fa.html
+│       └── verify_email_otp.html
+├── __init__.py
+├── admin.py
+├── apps.py
+├── forms.py
+├── middleware.py
+├── models.py
+├── signals.py
+├── urls.py
+├── utils.py
+└── views.py
+</code></pre>
+<h3 id="core-app">Core App</h3>
+<pre><code class="language-plaintext">core/
+├── migrations/
+│   ├── __init__.py
+│   └── ... (migration files)
+├── templates/
+│   ├── base.html
+│   └── home.html
+├── __init__.py
+├── admin.py
+├── apps.py
+├── context_processors.py
+├── models.py
+├── urls.py
+└── views.py
+</code></pre>
+<p>This completes the updated setup guide for the Django Authentication System with Magic Links and Security Preferences. For more information, please refer to the documentation or contact the maintainers.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
