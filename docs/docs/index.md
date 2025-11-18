@@ -437,13 +437,44 @@ No changes to the database are required, as the 2FA tables will simply be ignore
 
 ### 2FA Configuration
 
-You can configure the following settings in your `settings.py`:
+Configure the following settings in your `.env` file and `settings.py`:
 
+**In your `.env` file:**
+```bash
+# Two-Factor Authentication Settings
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14        # Days before re-verification is required (default: 14)
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10        # Minutes before email OTP expires (default: 10)
+TWO_FACTOR_EXEMPT_SUPERUSERS=false            # Exempt superusers from 2FA (default: false)
+TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt from 2FA
+```
+
+**In your `settings.py`:**
 ```python
 # Two-Factor Authentication Settings
-TWO_FACTOR_VERIFICATION_WINDOW_DAYS = 1  # Number of days before re-verification is required
-TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = 10  # Minutes before email OTP expires
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
+TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
+TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 ```
+
+**Default Exempt Paths:**
+The following paths are exempt from 2FA verification by default:
+- `/2fa/` - All 2FA management and verification URLs
+- `/admin/` - Django admin interface
+You can chage that from the twofactor/middleware.py code.
+
+**Additional Path Exemptions:**
+Add paths to `TWO_FACTOR_EXEMPT_PATHS` to exempt them from 2FA verification:
+```bash
+# Example: Exempt static files, media, API endpoints, or health checks
+TWO_FACTOR_EXEMPT_PATHS=/static/,/media/,/api/public/,/healthcheck/
+```
+
+**Superuser Exemption:**
+Set `TWO_FACTOR_EXEMPT_SUPERUSERS=true` in your `.env` to exempt all superusers from 2FA verification (useful for emergency access).
+
+The 2FA system will automatically protect all authenticated views and redirect users to verification when needed, providing all-round security.
+
 
 ## Integration with Other Apps
 
@@ -653,7 +684,7 @@ For production environments, it's recommended to set up a cron job to run this c
 
 4. **Email Not Sending**:
    - Check your email settings in `settings.py`
-   - For development, use the console email backend or MailHog
+   - For development, use the console email backend or MailHog (Download and run the MailHog server or check the settings.py file for configuration details)
 
 5. **Magic Links Not Working**:
    - Ensure `MAGIC_LINK_TOKEN_LIFESPAN` is set in settings

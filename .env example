@@ -3,7 +3,7 @@ SECRET_KEY= 'django-secret-key'
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1,
 
-# Email Settings (Development - Using MailHog for testing email templates)
+# Email Settings (Development - MailHog)
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=localhost
 EMAIL_PORT=1025
@@ -46,11 +46,18 @@ SOCIAL_AUTH_DISCORD_SECRET=discord-secret
 SOCIAL_AUTH_DISCORD_SCOPE= ['identify', 'email']  
 SOCIAL_AUTH_DISCORD_API_URL= 'https://discord.com/api'
 
-# Two-factor authentication settings
+# Two-Factor Authentication Settings
 # Number of days before re-verification is required
-TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS=1
 # Minutes before email OTP expires
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10
+
+# Exempt superusers from 2FA (True/False)
+TWO_FACTOR_EXEMPT_SUPERUSERS=True
+
+# Comma-separated list of paths to exempt from 2FA protection
+# e.g TWO_FACTOR_EXEMPT_PATHS=/admin/,/api/,/healthcheck/
+TWO_FACTOR_EXEMPT_PATHS=/accounts/login/,/accounts/logout/,/static/,/media/
 
 # reCAPTCHA settings
 RECAPTCHA_ENABLED=false
@@ -59,4 +66,4 @@ RECAPTCHA_SECRET_KEY=recaptcha-secret-key
 
 # Magic Links Settings
 MAGIC_LINK_TOKEN_LIFESPAN=10
-MAGIC_LINK_VERIFY_IP=False
+MAGIC_LINK_VERIFY_IP=True

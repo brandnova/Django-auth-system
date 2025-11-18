@@ -8,7 +8,7 @@ class UserTwoFactorSettingsAdmin(admin.ModelAdmin):
     list_filter = ('is_enabled', 'method', 'created_at')
     search_fields = ('user__email',)
     readonly_fields = ('created_at', 'updated_at', 'last_verified')
-    list_editable = ('is_enabled', 'method')  # Inline editing in list view
+    list_editable = ('is_enabled', 'method')
 
     fieldsets = (
         (None, {
@@ -32,5 +32,5 @@ class EmailOTPAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at',)
 
     def has_add_permission(self, request):
-        # Usually, OTPs are generated through views, not manually.
+        # OTPs are generated through views, not manually.
         return False

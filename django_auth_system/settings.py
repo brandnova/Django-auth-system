@@ -48,9 +48,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'twofactor.middleware.TwoFactorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'twofactor.middleware.TwoFactorMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
@@ -169,6 +169,9 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 
+
+# For development/testing, you can use the console backend instead of MailHog, to print the emails in the terminal. Comment out the above EMAIL_BACKEND and DEFAULT_FROM_EMAIL lines and uncomment the lines below.
+
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # DEFAULT_FROM_EMAIL= 'webmaster@localhost.com'
 
@@ -231,8 +234,9 @@ SOCIAL_AUTH_PIPELINE = (
 # Two-factor authentication settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
-# TWO_FACTOR_CALL_GATEWAY = None  # Disable call gateway
-# TWO_FACTOR_SMS_GATEWAY = None   # Disable SMS gateway (you can enable later with a provider)
+
+TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
+TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 
 # Django flash message storage in cookies
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

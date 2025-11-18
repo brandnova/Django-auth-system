@@ -64,10 +64,14 @@ def generate_backup_codes(count=8):
         codes.append(code)
     return codes
 
-def generate_email_otp(user, expiry_minutes=10):
+def generate_email_otp(user, expiry_minutes=None):
     """
     Generate a new email OTP for the user.
     """
+    # Use configured expiry minutes or default
+    if expiry_minutes is None:
+        expiry_minutes = getattr(settings, 'TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', 10)
+    
     # Generate a 6-digit code
     code = ''.join(random.choices(string.digits, k=6))
     
@@ -89,11 +93,18 @@ def send_otp_email(user, otp):
     """
     subject = "Your One-Time Password"
     
+    # Calculate exact expiry minutes from creation time
+    created_time = otp.created_at
+    if timezone.is_naive(created_time):
+        created_time = timezone.make_aware(created_time)
+    
+    total_expiry_minutes = int((otp.expires_at - created_time).total_seconds() / 60)
+    
     # Render the email template
     message = render_to_string('twofactor/emails/otp_email.html', {
         'user': user,
         'otp': otp.code,
-        'expiry_minutes': int((otp.expires_at - timezone.now()).total_seconds() / 60)
+        'expiry_minutes': total_expiry_minutes
     })
     
     email = EmailMessage(subject, message, to=[user.email])

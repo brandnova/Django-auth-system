@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 import datetime
 import logging
 
@@ -15,7 +16,7 @@ class UserTwoFactorSettings(models.Model):
     method = models.CharField(max_length=20, choices=[('totp', 'Authenticator App'), ('email', 'Email')], default='totp')
     totp_secret = models.CharField(max_length=255, blank=True, null=True)
     backup_codes = models.JSONField(default=list, blank=True)
-    used_backup_codes = models.JSONField(default=list, blank=True)  # Track used codes
+    used_backup_codes = models.JSONField(default=list, blank=True)
     last_verified = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,19 +44,23 @@ class UserTwoFactorSettings(models.Model):
                 if timezone.is_naive(verified_at):
                     verified_at = timezone.make_aware(verified_at)
                 
-                # Check if verification is still valid (within 12 hours)
+                # Check if verification is still valid (using configurable window)
+                from django.conf import settings
+                verification_window_hours = getattr(settings, 'TWO_FACTOR_VERIFICATION_WINDOW_DAYS', 14) * 24
                 now = timezone.now()
-                verification_valid = (now - verified_at) < datetime.timedelta(hours=12)
+                verification_valid = (now - verified_at) < datetime.timedelta(hours=verification_window_hours)
                 
                 if verification_valid:
                     return False
             except Exception as e:
                 logger.error(f"Error checking 2FA session verification: {str(e)}")
 
-        # Check if last_verified is recent enough (within 12 hours)
+        # Check if last_verified is recent enough
         if self.last_verified:
+            from django.conf import settings
+            verification_window_hours = getattr(settings, 'TWO_FACTOR_VERIFICATION_WINDOW_DAYS', 14) * 24
             now = timezone.now()
-            verification_valid = (now - self.last_verified) < datetime.timedelta(hours=12)
+            verification_valid = (now - self.last_verified) < datetime.timedelta(hours=verification_window_hours)
             
             if verification_valid:
                 return False
@@ -100,6 +105,14 @@ class UserTwoFactorSettings(models.Model):
         """
         return len(self.get_available_backup_codes()) > 0
     
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'is_enabled']),
+            models.Index(fields=['last_verified']),
+        ]
+        verbose_name = _('Two Factor Settings')
+        verbose_name_plural = _('Two Factor Settings')
+    
 
 
 class EmailOTP(models.Model):
@@ -127,3 +140,10 @@ class EmailOTP(models.Model):
         """
         self.is_used = True
         self.save(update_fields=['is_used'])
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'is_used', 'expires_at']),
+            models.Index(fields=['created_at']),
+        ]
+        get_latest_by = 'created_at'

@@ -273,6 +273,14 @@ def logout_view(request):
     """
     next_param = request.GET.get('next', '')
     
+    # Clear 2FA verification session
+    if '2fa_verified_at' in request.session:
+        del request.session['2fa_verified_at']
+    if '2fa_verification_in_progress' in request.session:
+        del request.session['2fa_verification_in_progress']
+    if 'next_url' in request.session:
+        del request.session['next_url']
+    
     logout(request)
     messages.success(request, 'You have been logged out.')
     

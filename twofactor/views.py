@@ -1,12 +1,14 @@
+import datetime
 import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.cache import cache
+from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-# from ratelimit.decorators import ratelimit
 import logging
 from .models import UserTwoFactorSettings, EmailOTP
 from .forms import TwoFactorSetupForm, TOTPVerificationForm, EmailOTPVerificationForm, BackupCodeVerificationForm, DisableTwoFactorForm
@@ -16,6 +18,24 @@ from .utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+def rate_limit(key, limit=5, timeout=300):
+    """
+    Simple rate limiting decorator.
+    """
+    def decorator(func):
+        def wrapper(request, *args, **kwargs):
+            cache_key = f"rate_limit_{key}_{request.user.pk if request.user.is_authenticated else request.META.get('REMOTE_ADDR')}"
+            count = cache.get(cache_key, 0)
+            
+            if count >= limit:
+                messages.error(request, "Too many attempts. Please try again later.")
+                return redirect('twofactor:twofactor_settings')
+            
+            cache.set(cache_key, count + 1, timeout)
+            return func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 @login_required
 def twofactor_settings(request):
@@ -211,10 +231,47 @@ def request_email_otp(request):
 
 
 @login_required
+@never_cache
+@rate_limit('verify_2fa', limit=10, timeout=900)  # 10 attempts per 15 minutes
 def verify_2fa(request):
     """
     View for verifying 2FA during login.
     """
+    # Check if 2FA is already verified in this session
+    def is_2fa_verified():
+        verified_at = request.session.get('2fa_verified_at')
+        if not verified_at:
+            return False
+        
+        try:
+            # Parse the ISO format datetime
+            if isinstance(verified_at, str):
+                verified_at = timezone.datetime.fromisoformat(verified_at)
+            
+            # Convert to timezone-aware if it's naive
+            if timezone.is_naive(verified_at):
+                verified_at = timezone.make_aware(verified_at)
+            
+            # Check if verification is still valid (within 12 hours)
+            now = timezone.now()
+            verification_valid = (now - verified_at) < datetime.timedelta(hours=12)
+            
+            return verification_valid
+            
+        except (ValueError, TypeError) as e:
+            logger.error(f"Error parsing 2FA verification timestamp: {str(e)}")
+            return False
+
+    # If 2FA is already verified, redirect to the intended page
+    if is_2fa_verified():
+        next_url = request.session.get('next_url', 'home')
+        if 'next_url' in request.session:
+            del request.session['next_url']
+        # Clear any verification in progress flags
+        if '2fa_verification_in_progress' in request.session:
+            del request.session['2fa_verification_in_progress']
+        return redirect(next_url)
+    
     # Get 2FA settings
     try:
         two_factor_settings = UserTwoFactorSettings.objects.get(user=request.user)
@@ -232,7 +289,7 @@ def verify_2fa(request):
             del request.session['next_url']
         return redirect(next_url)
     
-    # If 2FA is already verified, redirect to the next URL or home
+    # If 2FA is already verified (from database check), redirect to the next URL or home
     if not two_factor_settings.needs_verification():
         next_url = request.session.get('next_url', 'home')
         if 'next_url' in request.session:
