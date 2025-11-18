@@ -1933,11 +1933,34 @@ MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address matches requ
 </ol>
 <p>No changes to the database are required, as the 2FA tables will simply be ignored when the app is not installed.</p>
 <h3 id="2fa-configuration">2FA Configuration</h3>
-<p>You can configure the following settings in your <code>settings.py</code>:</p>
-<pre><code class="language-python"># Two-Factor Authentication Settings
-TWO_FACTOR_VERIFICATION_WINDOW_DAYS = 1  # Number of days before re-verification is required
-TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = 10  # Minutes before email OTP expires
+<p>Configure the following settings in your <code>.env</code> file and <code>settings.py</code>:</p>
+<p><strong>In your <code>.env</code> file:</strong></p>
+<pre><code class="language-bash"># Two-Factor Authentication Settings
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14        # Days before re-verification is required (default: 14)
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10        # Minutes before email OTP expires (default: 10)
+TWO_FACTOR_EXEMPT_SUPERUSERS=false            # Exempt superusers from 2FA (default: false)
+TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt from 2FA
 </code></pre>
+<p><strong>In your <code>settings.py</code>:</strong></p>
+<pre><code class="language-python"># Two-Factor Authentication Settings
+TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
+TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
+TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
+TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+</code></pre>
+<p><strong>Default Exempt Paths:</strong>
+The following paths are exempt from 2FA verification by default:
+- <code>/2fa/</code> - All 2FA management and verification URLs
+- <code>/admin/</code> - Django admin interface
+You can chage that from the twofactor/middleware.py code.</p>
+<p><strong>Additional Path Exemptions:</strong>
+Add paths to <code>TWO_FACTOR_EXEMPT_PATHS</code> to exempt them from 2FA verification:</p>
+<pre><code class="language-bash"># Example: Exempt static files, media, API endpoints, or health checks
+TWO_FACTOR_EXEMPT_PATHS=/static/,/media/,/api/public/,/healthcheck/
+</code></pre>
+<p><strong>Superuser Exemption:</strong>
+Set <code>TWO_FACTOR_EXEMPT_SUPERUSERS=true</code> in your <code>.env</code> to exempt all superusers from 2FA verification (useful for emergency access).</p>
+<p>The 2FA system will automatically protect all authenticated views and redirect users to verification when needed, providing all-round security.</p>
 <h2 id="integration-with-other-apps">Integration with Other Apps</h2>
 <h3 id="social-media-platform-example">Social Media Platform Example</h3>
 <p>If you're building a social media platform, you can integrate the authentication system as follows:</p>
@@ -2130,7 +2153,7 @@ python manage.py cleanup_deleted_accounts --no-input
 </li>
 <li>Check your email settings in <code>settings.py</code></li>
 <li>
-<p>For development, use the console email backend or MailHog</p>
+<p>For development, use the console email backend or MailHog (Download and run the MailHog server or check the settings.py file for configuration details)</p>
 </li>
 <li>
 <p><strong>Magic Links Not Working</strong>:</p>
