@@ -682,6 +682,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="2FA Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-options-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Options Explained
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-2fa-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How 2FA Works
+      
+    </span>
+  </a>
+  
 </li>
         
       </ul>
@@ -1322,6 +1350,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="2FA Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-options-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Options Explained
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-2fa-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How 2FA Works
+      
+    </span>
+  </a>
+  
 </li>
         
       </ul>
@@ -1889,6 +1945,7 @@ MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address matches requ
    <code>python
    MIDDLEWARE = [
        # ...
+       'django.contrib.auth.middleware.AuthenticationMiddleware',
        'twofactor.middleware.TwoFactorMiddleware',  # Add after authentication middleware
        # ...
    ]</code></p>
@@ -1904,24 +1961,17 @@ MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address matches requ
 </li>
 <li>
 <p>Add the 2FA button to the security settings template <code>accounts/templates/accounts/security/security_settings.html</code>:
-   ```html
- <br />
-<div class="flex justify-center">
-       <a href="{% url 'twofactor:twofactor_settings' %}" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition flex items-center space-x-2">
-           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-           </svg>
-           <span>Manage Two-Factor Authentication</span>
-       </a>
-   </div></p>
+   <code>html
+      &lt; a h r e f="{% url 'twofactor:twofactor_settings' %}" &gt;
+         &lt;span&gt;Manage Two-Factor Authentication&lt;/span&gt;
+      &lt;/ a &gt;</code></p>
 </li>
-</ol>
-<p>```</p>
-<ol>
-<li>Run migrations:
+<li>
+<p>Run migrations:
    <code>bash
    python manage.py makemigrations twofactor
-   python manage.py migrate</code></li>
+   python manage.py migrate</code></p>
+</li>
 </ol>
 <h3 id="disabling-2fa">Disabling 2FA</h3>
 <p>To disable 2FA, simply:</p>
@@ -1938,6 +1988,8 @@ MAGIC_LINK_VERIFY_IP = False    # Extra security: verify IP address matches requ
 <pre><code class="language-bash"># Two-Factor Authentication Settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14        # Days before re-verification is required (default: 14)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10        # Minutes before email OTP expires (default: 10)
+TWO_FACTOR_MAX_ATTEMPTS=5                     # Maximum failed verification attempts before lockout (default: 5)
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES=15        # Lockout duration in minutes after max attempts (default: 15)
 TWO_FACTOR_EXEMPT_SUPERUSERS=false            # Exempt superusers from 2FA (default: false)
 TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt from 2FA
 </code></pre>
@@ -1945,22 +1997,51 @@ TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt 
 <pre><code class="language-python"># Two-Factor Authentication Settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
+TWO_FACTOR_MAX_ATTEMPTS = config('TWO_FACTOR_MAX_ATTEMPTS', default=5, cast=int)
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES = config('TWO_FACTOR_LOCKOUT_DURATION_MINUTES', default=15, cast=int)
 TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
 TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 </code></pre>
+<h4 id="configuration-options-explained">Configuration Options Explained</h4>
+<p><strong><code>TWO_FACTOR_VERIFICATION_WINDOW_DAYS</code></strong>
+- Defines how long a 2FA verification remains valid before requiring re-verification
+- After successful verification, users won't need to verify again for this period
+- Recommended: 7-30 days for balance between security and convenience</p>
+<p><strong><code>TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES</code></strong>
+- Sets how long email OTP codes remain valid
+- Shorter times are more secure but may inconvenience users
+- Recommended: 5-15 minutes</p>
+<p><strong><code>TWO_FACTOR_MAX_ATTEMPTS</code></strong>
+- Maximum number of failed verification attempts before temporary lockout
+- Protects against brute force attacks
+- Recommended: 3-10 attempts</p>
+<p><strong><code>TWO_FACTOR_LOCKOUT_DURATION_MINUTES</code></strong>
+- How long users must wait after exceeding max attempts
+- Provides a cooling-off period to prevent rapid retry attacks
+- Recommended: 15-60 minutes</p>
+<p><strong>Superuser Exemption:</strong>
+Set <code>TWO_FACTOR_EXEMPT_SUPERUSERS=true</code> in your <code>.env</code> to exempt all superusers from 2FA verification (useful for emergency access, but reduces security).</p>
 <p><strong>Default Exempt Paths:</strong>
 The following paths are exempt from 2FA verification by default:
 - <code>/2fa/</code> - All 2FA management and verification URLs
-- <code>/admin/</code> - Django admin interface
-You can chage that from the twofactor/middleware.py code.</p>
+- <code>/admin/</code> - Django admin interface</p>
+<p>You can change these defaults in <code>twofactor/middleware.py</code> by modifying the <code>default_exempt_paths</code> list.</p>
 <p><strong>Additional Path Exemptions:</strong>
 Add paths to <code>TWO_FACTOR_EXEMPT_PATHS</code> to exempt them from 2FA verification:</p>
 <pre><code class="language-bash"># Example: Exempt static files, media, API endpoints, or health checks
 TWO_FACTOR_EXEMPT_PATHS=/static/,/media/,/api/public/,/healthcheck/
 </code></pre>
-<p><strong>Superuser Exemption:</strong>
-Set <code>TWO_FACTOR_EXEMPT_SUPERUSERS=true</code> in your <code>.env</code> to exempt all superusers from 2FA verification (useful for emergency access).</p>
-<p>The 2FA system will automatically protect all authenticated views and redirect users to verification when needed, providing all-round security.</p>
+<h3 id="how-2fa-works">How 2FA Works</h3>
+<ol>
+<li>When a user with 2FA enabled attempts to access protected pages after the verification window expires, they are redirected to <code>/2fa/verify/</code></li>
+<li>Users verify their identity using:</li>
+<li><strong>TOTP (Authenticator App)</strong>: 6-digit time-based codes from apps like Google Authenticator</li>
+<li><strong>Email OTP</strong>: 6-digit codes sent to their registered email</li>
+<li><strong>Backup Codes</strong>: 8-character recovery codes for emergency access</li>
+<li>After successful verification, users can access protected pages for the configured verification window period</li>
+<li>Rate limiting protects against brute force attacks by temporarily locking accounts after too many failed attempts</li>
+</ol>
+<p>The 2FA system automatically protects all authenticated views and redirects users to verification when needed, providing all-round security.</p>
 <h2 id="integration-with-other-apps">Integration with Other Apps</h2>
 <h3 id="social-media-platform-example">Social Media Platform Example</h3>
 <p>If you're building a social media platform, you can integrate the authentication system as follows:</p>
