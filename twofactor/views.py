@@ -19,23 +19,53 @@ from .utils import (
 
 logger = logging.getLogger(__name__)
 
-def rate_limit(key, limit=5, timeout=300):
+def check_rate_limit(user_or_ip, action='verify'):
     """
-    Simple rate limiting decorator.
+    Check if rate limit has been exceeded.
+    Returns (is_limited, remaining_attempts, lockout_time)
     """
-    def decorator(func):
-        def wrapper(request, *args, **kwargs):
-            cache_key = f"rate_limit_{key}_{request.user.pk if request.user.is_authenticated else request.META.get('REMOTE_ADDR')}"
-            count = cache.get(cache_key, 0)
-            
-            if count >= limit:
-                messages.error(request, "Too many attempts. Please try again later.")
-                return redirect('twofactor:twofactor_settings')
-            
-            cache.set(cache_key, count + 1, timeout)
-            return func(request, *args, **kwargs)
-        return wrapper
-    return decorator
+    from django.conf import settings
+    
+    max_attempts = getattr(settings, 'TWO_FACTOR_MAX_ATTEMPTS', 5)
+    lockout_duration = getattr(settings, 'TWO_FACTOR_LOCKOUT_DURATION_MINUTES', 15)
+    
+    cache_key = f"2fa_ratelimit_{action}_{user_or_ip}"
+    attempts = cache.get(cache_key, 0)
+    
+    if attempts >= max_attempts:
+        # Get the TTL (time to live) for the cache key
+        ttl = cache.ttl(cache_key)
+        return True, 0, ttl if ttl > 0 else lockout_duration * 60
+    
+    remaining = max_attempts - attempts
+    return False, remaining, 0
+
+
+def increment_rate_limit(user_or_ip, action='verify'):
+    """
+    Increment rate limit counter after a failed attempt.
+    """
+    from django.conf import settings
+    
+    max_attempts = getattr(settings, 'TWO_FACTOR_MAX_ATTEMPTS', 5)
+    lockout_duration = getattr(settings, 'TWO_FACTOR_LOCKOUT_DURATION_MINUTES', 15)
+    
+    cache_key = f"2fa_ratelimit_{action}_{user_or_ip}"
+    attempts = cache.get(cache_key, 0)
+    
+    # Set with lockout duration in seconds
+    cache.set(cache_key, attempts + 1, lockout_duration * 60)
+    
+    return attempts + 1
+
+
+def clear_rate_limit(user_or_ip, action='verify'):
+    """
+    Clear rate limit counter after successful verification.
+    """
+    cache_key = f"2fa_ratelimit_{action}_{user_or_ip}"
+    cache.delete(cache_key)
+
 
 @login_required
 def twofactor_settings(request):
@@ -232,11 +262,19 @@ def request_email_otp(request):
 
 @login_required
 @never_cache
-@rate_limit('verify_2fa', limit=10, timeout=900)  # 10 attempts per 15 minutes
 def verify_2fa(request):
     """
     View for verifying 2FA during login.
     """
+    user_identifier = str(request.user.pk)
+    
+    # Check rate limit FIRST
+    is_limited, remaining, lockout_time = check_rate_limit(user_identifier, 'verify')
+    if is_limited:
+        lockout_minutes = lockout_time // 60
+        messages.error(request, f"Too many failed attempts. Please try again in {lockout_minutes} minutes.")
+        return render(request, 'twofactor/verify_2fa.html', {'rate_limited': True, 'lockout_minutes': lockout_minutes})
+    
     # Check if 2FA is already verified in this session
     def is_2fa_verified():
         verified_at = request.session.get('2fa_verified_at')
@@ -311,10 +349,10 @@ def verify_2fa(request):
                 
                 # Verify the backup code
                 if two_factor_settings.verify_backup_code(code):
-                    # Update last verified
-                    two_factor_settings.update_last_verified()
+                    # SUCCESS - Clear rate limit
+                    clear_rate_limit(user_identifier, 'verify')
                     
-                    # Set session flag for 2FA verification
+                    two_factor_settings.update_last_verified()
                     request.session['2fa_verified_at'] = timezone.now().isoformat()
                     
                     # Clear the verification in progress flag
@@ -329,7 +367,6 @@ def verify_2fa(request):
                     if 'next_url' in request.session:
                         del request.session['next_url']
                     
-                    # Show warning about remaining backup codes
                     remaining_codes = len(two_factor_settings.get_available_backup_codes())
                     if remaining_codes == 0:
                         messages.warning(request, "You have used all your backup codes. Please generate new ones from your security settings.")
@@ -339,6 +376,8 @@ def verify_2fa(request):
                     messages.success(request, "Two-factor authentication verified successfully using backup code.")
                     return redirect(next_url)
                 else:
+                    # FAILED - Increment rate limit
+                    attempts = increment_rate_limit(user_identifier, 'verify')
                     messages.error(request, "Invalid or already used backup code. Please try again.")
         else:
             form = BackupCodeVerificationForm()
@@ -347,6 +386,7 @@ def verify_2fa(request):
             'method': 'backup',
             'form': form,
             'available_codes_count': len(two_factor_settings.get_available_backup_codes()),
+            'remaining_attempts': remaining,
         }
         
         return render(request, 'twofactor/verify_2fa.html', context)
@@ -360,10 +400,10 @@ def verify_2fa(request):
                 
                 # Verify the code
                 if verify_totp_code(two_factor_settings.totp_secret, code):
-                    # Update last verified
-                    two_factor_settings.update_last_verified()
+                    # SUCCESS - Clear rate limit
+                    clear_rate_limit(user_identifier, 'verify')
                     
-                    # Set session flag for 2FA verification
+                    two_factor_settings.update_last_verified()
                     request.session['2fa_verified_at'] = timezone.now().isoformat()
                     
                     # Clear the verification in progress flag
@@ -381,6 +421,8 @@ def verify_2fa(request):
                     messages.success(request, "Two-factor authentication verified successfully.")
                     return redirect(next_url)
                 else:
+                    # FAILED - Increment rate limit
+                    attempts = increment_rate_limit(user_identifier, 'verify')
                     messages.error(request, "Invalid verification code. Please try again.")
         else:
             form = TOTPVerificationForm()
@@ -389,31 +431,40 @@ def verify_2fa(request):
             'method': 'totp',
             'form': form,
             'has_backup_codes': two_factor_settings.has_available_backup_codes(),
+            'remaining_attempts': remaining,
         }
         
         return render(request, 'twofactor/verify_2fa.html', context)
     
-    # Handle Email verification (similar structure with backup code option)
+    # Handle Email verification
     elif two_factor_settings.method == 'email':
         # Check if we need to send an OTP
         otp_sent = request.session.get('email_otp_sent', False)
         
         # Handle POST requests
         if request.method == 'POST':
-            # Check if this is a request to send OTP
             if request.POST.get('action') == 'send_otp':
-                try:
-                    otp = generate_email_otp(request.user)
-                    send_otp_email(request.user, otp)
-                    
-                    request.session['email_otp_sent'] = True
-                    request.session.save()
-                    otp_sent = True
-                    
-                    messages.success(request, f"A verification code has been sent to {request.user.email}.")
-                except Exception as e:
-                    logger.error(f"Error sending OTP: {str(e)}")
-                    messages.error(request, "There was an error sending the verification code. Please try again.")
+                # Check rate limit for OTP sending
+                is_limited_otp, remaining_otp, lockout_time_otp = check_rate_limit(user_identifier, 'send_otp')
+                if is_limited_otp:
+                    lockout_minutes = lockout_time_otp // 60
+                    messages.error(request, f"Too many OTP requests. Please try again in {lockout_minutes} minutes.")
+                else:
+                    try:
+                        otp = generate_email_otp(request.user)
+                        send_otp_email(request.user, otp)
+                        
+                        # Increment send_otp rate limit
+                        increment_rate_limit(user_identifier, 'send_otp')
+                        
+                        request.session['email_otp_sent'] = True
+                        request.session.save()
+                        otp_sent = True
+                        
+                        messages.success(request, f"A verification code has been sent to {request.user.email}.")
+                    except Exception as e:
+                        logger.error(f"Error sending OTP: {str(e)}")
+                        messages.error(request, "There was an error sending the verification code. Please try again.")
             
             # Check if this is a code verification
             elif otp_sent:
@@ -421,19 +472,19 @@ def verify_2fa(request):
                 if form.is_valid():
                     code = form.cleaned_data['code']
                     
-                    # Verify the code
                     if validate_email_otp(request.user, code):
-                        # Update last verified
-                        two_factor_settings.update_last_verified()
+                        # SUCCESS - Clear both rate limits
+                        clear_rate_limit(user_identifier, 'verify')
+                        clear_rate_limit(user_identifier, 'send_otp')
                         
-                        # Set session flag for 2FA verification
+                        two_factor_settings.update_last_verified()
                         request.session['2fa_verified_at'] = timezone.now().isoformat()
                         
                         # Clear the verification in progress flag
                         if '2fa_verification_in_progress' in request.session:
                             del request.session['2fa_verification_in_progress']
-                        
                         # Clean up session
+                        
                         if 'email_otp_sent' in request.session:
                             del request.session['email_otp_sent']
                         
@@ -448,9 +499,10 @@ def verify_2fa(request):
                         messages.success(request, "Two-factor authentication verified successfully.")
                         return redirect(next_url)
                     else:
+                        # FAILED - Increment rate limit
+                        attempts = increment_rate_limit(user_identifier, 'verify')
                         messages.error(request, "Invalid or expired verification code. Please try again.")
         
-        # For GET requests or when form is needed
         if otp_sent:
             form = EmailOTPVerificationForm()
         else:
@@ -461,6 +513,7 @@ def verify_2fa(request):
             'otp_sent': otp_sent,
             'form': form,
             'has_backup_codes': two_factor_settings.has_available_backup_codes(),
+            'remaining_attempts': remaining,
         }
         
         return render(request, 'twofactor/verify_2fa.html', context)
@@ -477,12 +530,23 @@ def request_verification_otp(request):
     from .models import UserTwoFactorSettings
     from .utils import generate_email_otp, send_otp_email
     
+    user_identifier = str(request.user.pk)
+    
+    # Check rate limit for OTP sending
+    is_limited, remaining, lockout_time = check_rate_limit(user_identifier, 'send_otp')
+    if is_limited:
+        lockout_minutes = lockout_time // 60
+        messages.error(request, f"Too many OTP requests. Please try again in {lockout_minutes} minutes.")
+        return redirect('twofactor:verify_2fa')
+    
     try:
         two_factor_settings = UserTwoFactorSettings.objects.get(user=request.user, is_enabled=True, method='email')
         
-        # Generate and send OTP
         otp = generate_email_otp(request.user)
         send_otp_email(request.user, otp)
+        
+        # Increment rate limit for OTP sending
+        increment_rate_limit(user_identifier, 'send_otp')
         
         request.session['email_otp_sent'] = True
         request.session.save()

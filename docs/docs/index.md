@@ -392,6 +392,7 @@ The Two-Factor Authentication (2FA) app is designed to be modular and can be eas
    ```python
    MIDDLEWARE = [
        # ...
+       'django.contrib.auth.middleware.AuthenticationMiddleware',
        'twofactor.middleware.TwoFactorMiddleware',  # Add after authentication middleware
        # ...
    ]
@@ -410,9 +411,6 @@ The Two-Factor Authentication (2FA) app is designed to be modular and can be eas
    ```html
    <div class="flex justify-center">
        <a href="{% url 'twofactor:twofactor_settings' %}" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition flex items-center space-x-2">
-           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-           </svg>
            <span>Manage Two-Factor Authentication</span>
        </a>
    </div>
@@ -444,6 +442,8 @@ Configure the following settings in your `.env` file and `settings.py`:
 # Two-Factor Authentication Settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS=14        # Days before re-verification is required (default: 14)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10        # Minutes before email OTP expires (default: 10)
+TWO_FACTOR_MAX_ATTEMPTS=5                     # Maximum failed verification attempts before lockout (default: 5)
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES=15        # Lockout duration in minutes after max attempts (default: 15)
 TWO_FACTOR_EXEMPT_SUPERUSERS=false            # Exempt superusers from 2FA (default: false)
 TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt from 2FA
 ```
@@ -453,15 +453,43 @@ TWO_FACTOR_EXEMPT_PATHS=/static/,/media/      # Comma-separated paths to exempt 
 # Two-Factor Authentication Settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
+TWO_FACTOR_MAX_ATTEMPTS = config('TWO_FACTOR_MAX_ATTEMPTS', default=5, cast=int)
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES = config('TWO_FACTOR_LOCKOUT_DURATION_MINUTES', default=15, cast=int)
 TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
 TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 ```
+
+#### Configuration Options Explained
+
+**`TWO_FACTOR_VERIFICATION_WINDOW_DAYS`**
+- Defines how long a 2FA verification remains valid before requiring re-verification
+- After successful verification, users won't need to verify again for this period
+- Recommended: 7-30 days for balance between security and convenience
+
+**`TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES`**
+- Sets how long email OTP codes remain valid
+- Shorter times are more secure but may inconvenience users
+- Recommended: 5-15 minutes
+
+**`TWO_FACTOR_MAX_ATTEMPTS`**
+- Maximum number of failed verification attempts before temporary lockout
+- Protects against brute force attacks
+- Recommended: 3-10 attempts
+
+**`TWO_FACTOR_LOCKOUT_DURATION_MINUTES`**
+- How long users must wait after exceeding max attempts
+- Provides a cooling-off period to prevent rapid retry attacks
+- Recommended: 15-60 minutes
+
+**Superuser Exemption:**
+Set `TWO_FACTOR_EXEMPT_SUPERUSERS=true` in your `.env` to exempt all superusers from 2FA verification (useful for emergency access, but reduces security).
 
 **Default Exempt Paths:**
 The following paths are exempt from 2FA verification by default:
 - `/2fa/` - All 2FA management and verification URLs
 - `/admin/` - Django admin interface
-You can chage that from the twofactor/middleware.py code.
+
+You can change these defaults in `twofactor/middleware.py` by modifying the `default_exempt_paths` list.
 
 **Additional Path Exemptions:**
 Add paths to `TWO_FACTOR_EXEMPT_PATHS` to exempt them from 2FA verification:
@@ -470,10 +498,16 @@ Add paths to `TWO_FACTOR_EXEMPT_PATHS` to exempt them from 2FA verification:
 TWO_FACTOR_EXEMPT_PATHS=/static/,/media/,/api/public/,/healthcheck/
 ```
 
-**Superuser Exemption:**
-Set `TWO_FACTOR_EXEMPT_SUPERUSERS=true` in your `.env` to exempt all superusers from 2FA verification (useful for emergency access).
+### How 2FA Works
+1. When a user with 2FA enabled attempts to access protected pages after the verification window expires, they are redirected to `/2fa/verify/`
+2. Users verify their identity using:
+   - **TOTP (Authenticator App)**: 6-digit time-based codes from apps like Google Authenticator
+   - **Email OTP**: 6-digit codes sent to their registered email
+   - **Backup Codes**: 8-character recovery codes for emergency access
+3. After successful verification, users can access protected pages for the configured verification window period
+4. Rate limiting protects against brute force attacks by temporarily locking accounts after too many failed attempts
 
-The 2FA system will automatically protect all authenticated views and redirect users to verification when needed, providing all-round security.
+The 2FA system automatically protects all authenticated views and redirects users to verification when needed, providing all-round security.
 
 
 ## Integration with Other Apps

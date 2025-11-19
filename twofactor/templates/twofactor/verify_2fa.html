@@ -21,8 +21,26 @@
                 {% endfor %}
             </div>
             {% endif %}
+
+            {% if rate_limited %}
+            <!-- Rate Limited View -->
+            <div class="text-center">
+                <div class="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg mb-4">
+                    <i class="fas fa-clock text-red-500 text-3xl mb-3"></i>
+                    <p class="text-red-600 dark:text-red-400 font-medium mb-2">
+                        Too Many Failed Attempts
+                    </p>
+                    <p class="text-secondary-600 dark:text-gray-400 text-sm">
+                        Please try again in {{ lockout_minutes }} minute{{ lockout_minutes|pluralize }}.
+                    </p>
+                </div>
+                
+                <a href="{% url 'accounts:logout' %}" class="text-sm text-secondary-600 dark:text-gray-400 hover:underline">
+                    Log out and sign in with a different account
+                </a>
+            </div>
             
-            {% if method == 'backup' %}
+            {% elif method == 'backup' %}
             <!-- Backup Code Verification Form -->
             <div class="mb-6">
                 <p class="text-secondary-600 dark:text-gray-400 text-center">
@@ -32,6 +50,15 @@
                     You have {{ available_codes_count }} backup codes remaining.
                 </p>
             </div>
+
+            {% if remaining_attempts %}
+            <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p class="text-sm text-blue-600 dark:text-blue-400 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    {{ remaining_attempts }} attempt{{ remaining_attempts|pluralize }} remaining
+                </p>
+            </div>
+            {% endif %}
             
             <form method="post" class="space-y-4">
                 {% csrf_token %}
@@ -64,6 +91,15 @@
                     Enter the 6-digit code from your authenticator app.
                 </p>
             </div>
+
+            {% if remaining_attempts %}
+            <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p class="text-sm text-blue-600 dark:text-blue-400 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    {{ remaining_attempts }} attempt{{ remaining_attempts|pluralize }} remaining
+                </p>
+            </div>
+            {% endif %}
             
             <form method="post" class="space-y-4">
                 {% csrf_token %}
@@ -99,6 +135,15 @@
                     Enter the verification code sent to your email.
                 </p>
             </div>
+
+            {% if remaining_attempts %}
+            <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p class="text-sm text-blue-600 dark:text-blue-400 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    {{ remaining_attempts }} attempt{{ remaining_attempts|pluralize }} remaining
+                </p>
+            </div>
+            {% endif %}
             
             <form method="post" class="space-y-4">
                 {% csrf_token %}

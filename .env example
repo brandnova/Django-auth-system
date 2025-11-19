@@ -51,10 +51,12 @@ SOCIAL_AUTH_DISCORD_API_URL= 'https://discord.com/api'
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS=1
 # Minutes before email OTP expires
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES=10
-
-# Exempt superusers from 2FA (True/False)
-TWO_FACTOR_EXEMPT_SUPERUSERS=True
-
+# Maximum number of allowed 2FA attempts
+TWO_FACTOR_MAX_ATTEMPTS=5
+# Lockout duration in minutes after exceeding max attempts
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES=15
+# Exempt superusers from 2FA (true/false)
+TWO_FACTOR_EXEMPT_SUPERUSERS=false
 # Comma-separated list of paths to exempt from 2FA protection
 # e.g TWO_FACTOR_EXEMPT_PATHS=/admin/,/api/,/healthcheck/
 TWO_FACTOR_EXEMPT_PATHS=/accounts/login/,/accounts/logout/,/static/,/media/

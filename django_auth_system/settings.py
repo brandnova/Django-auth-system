@@ -234,7 +234,8 @@ SOCIAL_AUTH_PIPELINE = (
 # Two-factor authentication settings
 TWO_FACTOR_VERIFICATION_WINDOW_DAYS = config('TWO_FACTOR_VERIFICATION_WINDOW_DAYS', default=14, cast=int)
 TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES = config('TWO_FACTOR_EMAIL_OTP_EXPIRY_MINUTES', default=10, cast=int)
-
+TWO_FACTOR_MAX_ATTEMPTS = config('TWO_FACTOR_MAX_ATTEMPTS', default=5, cast=int)
+TWO_FACTOR_LOCKOUT_DURATION_MINUTES = config('TWO_FACTOR_LOCKOUT_DURATION_MINUTES', default=15, cast=int)
 TWO_FACTOR_EXEMPT_SUPERUSERS = config('TWO_FACTOR_EXEMPT_SUPERUSERS', default=False, cast=bool)
 TWO_FACTOR_EXEMPT_PATHS = config('TWO_FACTOR_EXEMPT_PATHS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 
