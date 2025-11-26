@@ -39,11 +39,11 @@ env/
 .DS_Store
 Thumbs.db
 
-# Migrations (optional)
-migrations
-**/migrations/*.py
-**/migrations/__pycache__/
-!**/migrations/__init__.py
+# DO NOT Ignore Migrations
+# migrations
+# **/migrations/*.py
+# **/migrations/__pycache__/
+# !**/migrations/__init__.py
 
 # pytest
 .cache/
